@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Agent - AI Email Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .priority-high { border-left: 4px solid #ef4444; }
+    .priority-medium { border-left: 4px solid #f59e0b; }
+    .priority-low { border-left: 4px solid #10b981; }
+
+    .email-unread { background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; }
+    .email-read { background: rgba(255, 255, 255, 0.05); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Header -->
+  <nav class="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center gap-3">
+          <button onclick="goHome()" class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center hover:bg-indigo-200 transition-colors">
+            <i class="fas fa-home text-indigo-600"></i>
+          </button>
+          <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-envelope text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-gray-800">Email Agent</h1>
+            <p class="text-sm text-gray-500">AI Email Management</p>
+          </div>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-6">
+          <div class="text-right">
+            <p class="text-sm text-gray-500">Last sync</p>
+            <p class="font-semibold text-gray-800" id="lastSync">Just now</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span class="text-sm text-green-600 font-medium">Online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">AI Email Management</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Let AI handle your inbox intelligently. Summarize, categorize, and manage emails with natural language commands.
+      </p>
+    </div>
+
+    <!-- Email Command Center -->
+    <div class="bg-white rounded-2xl p-6 mb-8 shadow-lg border border-gray-200">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+          <i class="fas fa-brain text-white"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-800">Email AI Command</h2>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="flex-1">
+          <input 
+            id="emailCommand" 
+            type="text" 
+            placeholder="Ask AI: 'Summarize today's emails', 'Mark all newsletters as read', 'Show priority emails'" 
+            class="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-800 placeholder-gray-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 outline-none transition-all" 
+          />
+        </div>
+        <button 
+          onclick="executeEmailCommand()" 
+          class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 min-w-[120px]"
+          id="emailAiBtn"
+        >
+          <i class="fas fa-robot"></i>
+          <span>Execute</span>
+        </button>
+      </div>
+      
+      <!-- Quick Commands -->
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="text-sm text-gray-500 mr-2">Quick commands:</span>
+        <button onclick="setEmailCommand('Summarize unread emails')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition-colors">
+          Summarize Unread
+        </button>
+        <button onclick="setEmailCommand('Show priority emails')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition-colors">
+          Priority Emails
+        </button>
+        <button onclick="setEmailCommand('Archive old emails')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full transition-colors">
+          Archive Old
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+        <div class="text-center">
+          <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-envelope text-red-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-gray-800" id="unreadCount">23</div>
+          <div class="text-sm text-gray-500">Unread</div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+        <div class="text-center">
+          <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-exclamation-triangle text-orange-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-gray-800" id="priorityCount">5</div>
+          <div class="text-sm text-gray-500">Priority</div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+        <div class="text-center">
+          <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-check-circle text-green-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-gray-800" id="processedCount">147</div>
+          <div class="text-sm text-gray-500">Processed</div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+        <div class="text-center">
+          <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <i class="fas fa-robot text-purple-600"></i>
+          </div>
+          <div class="text-2xl font-bold text-gray-800" id="aiActionsCount">89</div>
+          <div class="text-sm text-gray-500">AI Actions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Email Interface -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Email List -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">Inbox</h3>
+            <div class="flex items-center gap-2">
+              <button onclick="refreshEmails()" class="p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <i class="fas fa-sync-alt text-gray-600"></i>
+              </button>
+              <select class="bg-gray-100 border border-gray-300 rounded-lg px-3 py-1 text-gray-700 text-sm">
+                <option value="all">All</option>
+                <option value="unread">Unread</option>
+                <option value="priority">Priority</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="space-y-3 custom-scrollbar max-h-96 overflow-y-auto" id="emailList">
+            <!-- Priority Email -->
+            <div class="email-unread priority-high p-4 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors border border-gray-200" onclick="selectEmail(1)">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-semibold text-gray-800">Sarah Johnson</span>
+                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">High Priority</span>
+                  </div>
+                  <h4 class="font-medium text-gray-800 mb-1">Project Kickoff Meeting - Urgent Response Needed</h4>
+                  <p class="text-sm text-gray-600 line-clamp-2">Hi team, we need to schedule the project kickoff meeting for next week. Please confirm your availability...</p>
+                </div>
+                <div class="text-right ml-4">
+                  <div class="text-sm text-gray-500">2 min ago</div>
+                  <div class="flex items-center gap-1 mt-1">
+                    <i class="fas fa-paperclip text-gray-400 text-xs"></i>
+                    <span class="text-xs text-gray-500">2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Regular Email -->
+            <div class="email-unread priority-medium p-4 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors border border-gray-200" onclick="selectEmail(2)">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-semibold text-gray-800">Finance Team</span>
+                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Medium</span>
+                  </div>
+                  <h4 class="font-medium text-gray-800 mb-1">Invoice Approval Required - $2,500</h4>
+                  <p class="text-sm text-gray-600 line-clamp-2">Please review and approve the attached invoice from our vendor for the recent software purchase...</p>
+                </div>
+                <div class="text-right ml-4">
+                  <div class="text-sm text-gray-500">15 min ago</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Read Email -->
+            <div class="email-read priority-low p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border border-gray-200" onclick="selectEmail(3)">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-medium text-gray-600">Marketing Team</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Low</span>
+                  </div>
+                  <h4 class="font-medium text-gray-600 mb-1">Q4 Campaign Results Summary</h4>
+                  <p class="text-sm text-gray-500 line-clamp-2">Here's the summary of our Q4 marketing campaign performance. Overall, we exceeded our targets...</p>
+                </div>
+                <div class="text-right ml-4">
+                  <div class="text-sm text-gray-500">1 hour ago</div>
+                  <i class="fas fa-check text-green-500 text-sm mt-1"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="email-read p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border border-gray-200" onclick="selectEmail(4)">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-medium text-gray-600">TechCrunch</span>
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">Newsletter</span>
+                  </div>
+                  <h4 class="font-medium text-gray-600 mb-1">Daily Tech News Digest</h4>
+                  <p class="text-sm text-gray-500 line-clamp-2">Today's top stories in technology: AI breakthrough, startup funding, and more...</p>
+                </div>
+                <div class="text-right ml-4">
+                  <div class="text-sm text-gray-500">3 hours ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Actions Panel -->
+      <div class="space-y-6">
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
+          <div class="space-y-3">
+            <button onclick="composeEmail()" class="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors flex items-center gap-3">
+              <i class="fas fa-edit"></i>
+              <span>Compose Email</span>
+            </button>
+            <button onclick="markAllRead()" class="w-full p-3 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors flex items-center gap-3">
+              <i class="fas fa-check-double"></i>
+              <span>Mark All Read</span>
+            </button>
+            <button onclick="archiveOld()" class="w-full p-3 bg-orange-600 hover:bg-orange-700 rounded-lg text-white font-medium transition-colors flex items-center gap-3">
+              <i class="fas fa-archive"></i>
+              <span>Archive Old</span>
+            </button>
+            <button onclick="smartSort()" class="w-full p-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-medium transition-colors flex items-center gap-3">
+              <i class="fas fa-magic"></i>
+              <span>Smart Sort</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">AI Insights</h3>
+          <div class="space-y-4">
+            <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+              <h4 class="font-medium text-blue-700 mb-1">Peak Email Times</h4>
+              <p class="text-sm text-blue-600">Most emails arrive 9-11 AM</p>
+            </div>
+            <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+              <h4 class="font-medium text-green-700 mb-1">Response Rate</h4>
+              <p class="text-sm text-green-600">87% avg response time: 2.3 hours</p>
+            </div>
+            <div class="bg-orange-50 rounded-lg p-3 border border-orange-200">
+              <h4 class="font-medium text-orange-700 mb-1">Productivity Tip</h4>
+              <p class="text-sm text-orange-600">Schedule focused email time blocks</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent AI Actions -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">Recent AI Actions</h3>
+          <div class="space-y-3 custom-scrollbar max-h-48 overflow-y-auto">
+            <div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+              <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fas fa-envelope text-blue-600 text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-800">Summarized 15 emails</p>
+                <p class="text-xs text-gray-500">2 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+              <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fas fa-check text-green-600 text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-800">Auto-archived newsletters</p>
+                <p class="text-xs text-gray-500">5 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+              <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fas fa-magic text-purple-600 text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm text-gray-800">Smart sorted by priority</p>
+                <p class="text-xs text-gray-500">10 minutes ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Response Modal -->
+  <div id="aiModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <i class="fas fa-robot text-blue-600"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800">Email AI Response</h3>
+          </div>
+          <button onclick="closeAIModal()" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-6 overflow-y-auto custom-scrollbar" id="aiResponse">
+        <!-- AI response content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Navigation function
+    function goHome() {
+      if (confirm('Return to AI Services Hub?')) {
+        alert('Navigating to AI Services Hub...\n\nIn production, this would load: index.html');
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateLastSync();
+      initializeEventListeners();
+    });
+
+    function initializeEventListeners() {
+      document.getElementById('emailCommand').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          executeEmailCommand();
+        }
+      });
+    }
+
+    function updateLastSync() {
+      document.getElementById('lastSync').textContent = new Date().toLocaleTimeString();
+    }
+
+    function setEmailCommand(command) {
+      document.getElementById('emailCommand').value = command;
+      executeEmailCommand();
+    }
+
+    async function executeEmailCommand() {
+      const command = document.getElementById('emailCommand').value.trim();
+      if (!command) {
+        alert('Please enter a command');
+        return;
+      }
+
+      const btn = document.getElementById('emailAiBtn');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      btn.disabled = true;
+
+      try {
+        // Simulate AI processing
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const response = generateEmailAIResponse(command);
+        showAIModal(response);
+        
+        // Update stats
+        updateEmailStats();
+        updateLastSync();
+
+      } catch (error) {
+        alert('Error processing command: ' + error.message);
+      } finally {
+        btn.innerHTML = '<i class="fas fa-robot"></i> <span>Execute</span>';
+        btn.disabled = false;
+        document.getElementById('emailCommand').value = '';
+      }
+    }
+
+    function generateEmailAIResponse(command) {
+      const lowerCommand = command.toLowerCase();
+      
+      if (lowerCommand.includes('summarize') || lowerCommand.includes('summary')) {
+        return `
+          <div class="space-y-4">
+            <h4 class="text-lg font-semibold text-gray-800">📧 Email Summary</h4>
+            <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <h5 class="font-medium text-red-800 mb-2">High Priority Emails (2)</h5>
+              <ul class="space-y-2 text-sm text-red-700">
+                <li>• Sarah Johnson - Project Kickoff Meeting (requires immediate response)</li>
+                <li>• Finance Team - Invoice Approval for $2,500 vendor payment</li>
+              </ul>
+            </div>
+            <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+              <h5 class="font-medium text-orange-800 mb-2">Medium Priority (3)</h5>
+              <ul class="space-y-1 text-sm text-orange-700">
+                <li>• Client feedback on Q4 proposal</li>
+                <li>• Team update from HR department</li>
+                <li>• Security alert notification</li>
+              </ul>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+              <h5 class="font-medium text-gray-800 mb-2">Other Emails (18)</h5>
+              <p class="text-sm text-gray-600">Newsletters (12), Social notifications (4), Automated reports (2)</p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+              <p class="text-sm text-blue-700">💡 <strong>AI Recommendation:</strong> Focus on the 2 high-priority emails first. I can auto-archive the newsletters and draft responses for medium priority items.</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      return `
+        <div class="space-y-4">
+          <h4 class="text-lg font-semibold text-gray-800">🤖 Email AI Response</h4>
+          <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <p class="text-blue-700">Processing your request: "<em>${command}</em>"</p>
+            <p class="text-sm text-blue-600 mt-2">I can help you with:</p>
+            <ul class="mt-3 space-y-1 text-sm text-blue-700">
+              <li>• Email summarization and prioritization</li>
+              <li>• Automatic categorization and sorting</li>
+              <li>• Draft response generation</li>
+              <li>• Schedule meetings from emails</li>
+              <li>• Archive and organize emails</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function showAIModal(content) {
+      document.getElementById('aiResponse').innerHTML = content;
+      document.getElementById('aiModal').classList.remove('hidden');
+    }
+
+    function closeAIModal() {
+      document.getElementById('aiModal').classList.add('hidden');
+    }
+
+    function updateEmailStats() {
+      const aiActions = document.getElementById('aiActionsCount');
+      const current = parseInt(aiActions.textContent);
+      aiActions.textContent = current + 1;
+    }
+
+    // Quick action functions
+    function composeEmail() {
+      showAIModal(`
+        <div class="space-y-4">
+          <h4 class="text-lg font-semibold text-gray-800">✍️ Compose New Email</h4>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">To:</label>
+              <input type="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="recipient@example.com">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Subject:</label>
+              <input type="text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Email subject">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Message:</label>
+              <textarea rows="6" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message here..."></textarea>
+            </div>
+            <div class="flex gap-3">
+              <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Send Email</button>
+              <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Save Draft</button>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    function selectEmail(id) {
+      // Highlight selected email and show preview
+      document.querySelectorAll('#emailList > div').forEach(email => {
+        email.classList.remove('ring-2', 'ring-blue-400');
+      });
+      event.currentTarget.classList.add('ring-2', 'ring-blue-400');
+    }
+
+    function refreshEmails() {
+      // Simulate refresh
+      const btn = event.currentTarget;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-600"></i>';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-sync-alt text-gray-600"></i>';
+        updateLastSync();
+      }, 1000);
+    }
+
+    function markAllRead() {
+      if (confirm('Mark all emails as read?')) {
+        document.getElementById('unreadCount').textContent = '0';
+        updateEmailStats();
+      }
+    }
+
+    function archiveOld() {
+      if (confirm('Archive emails older than 30 days?')) {
+        updateEmailStats();
+        alert('Successfully archived 15 old emails');
+      }
+    }
+
+    function smartSort() {
+      updateEmailStats();
+      alert('Emails sorted by AI priority algorithm');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Services Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    .service-card {
+      background: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid #e5e7eb;
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .status-indicator {
+      position: relative;
+    }
+
+    .status-indicator::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid white;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .service-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <nav class="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg status-indicator">
+            <i class="fas fa-brain text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">AI Services Hub</h1>
+            <p class="text-sm text-gray-200">Intelligent Business Solutions</p>
+          </div>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-6">
+          <div class="text-right">
+            <p class="text-sm text-gray-200">System Status</p>
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="text-sm font-medium text-white">All Systems Online</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+    
+    <!-- Hero Section -->
+    <div class="text-center mb-16">
+      <div class="float-animation mb-8">
+        <div class="w-24 h-24 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto shadow-2xl pulse-glow">
+          <i class="fas fa-rocket text-white text-4xl"></i>
+        </div>
+      </div>
+      <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">
+        Welcome to <span class="text-indigo-200">AI Services</span>
+      </h1>
+      <p class="text-xl text-gray-200 max-w-3xl mx-auto mb-8">
+        Supercharge your business with our suite of AI-powered tools. From trade intelligence to email management, 
+        we've got everything you need to work smarter, not harder.
+      </p>
+      
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="text-2xl font-bold text-indigo-600">4</div>
+          <div class="text-sm text-gray-600">AI Agents</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="text-2xl font-bold text-indigo-600">99.9%</div>
+          <div class="text-sm text-gray-600">Uptime</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="text-2xl font-bold text-indigo-600">24/7</div>
+          <div class="text-sm text-gray-600">Available</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-lg">
+          <div class="text-2xl font-bold text-indigo-600">150+</div>
+          <div class="text-sm text-gray-600">Countries</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="service-grid grid gap-8 lg:gap-12">
+      
+      <!-- Trade Intelligence Service -->
+      <div class="service-card rounded-3xl p-8 lg:p-10 group cursor-pointer shadow-xl" onclick="navigateToService('trade')">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <i class="fas fa-ship text-white text-2xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Trade Intelligence</h3>
+              <p class="text-gray-600">Victor AI Agent</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-sm text-green-600 font-medium">Active</span>
+          </div>
+        </div>
+        
+        <p class="text-gray-600 mb-6 text-lg leading-relaxed">
+          Find exporters, importers, and trade data from around the world. Search our comprehensive database 
+          of companies and create/update/delete records with natural language commands.
+        </p>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-blue-50 rounded-xl p-4">
+            <div class="text-xl font-bold text-blue-600">150+</div>
+            <div class="text-sm text-gray-600">Countries</div>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-4">
+            <div class="text-xl font-bold text-blue-600">50K+</div>
+            <div class="text-sm text-gray-600">Companies</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Search</span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">CRUD</span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">Export</span>
+          </div>
+          <i class="fas fa-arrow-right text-blue-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"></i>
+        </div>
+      </div>
+
+      <!-- Email & Task Management Service -->
+      <div class="service-card rounded-3xl p-8 lg:p-10 group cursor-pointer shadow-xl" onclick="navigateToService('email')">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+              <i class="fas fa-envelope-open-text text-white text-2xl"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-2">Email & Task Manager</h3>
+              <p class="text-gray-600">AI Assistant</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-sm text-green-600 font-medium">Active</span>
+          </div>
+        </div>
+        
+        <p class="text-gray-600 mb-6 text-lg leading-relaxed">
+          Manage emails, schedule meetings, and organize tasks with AI assistance. Get intelligent summaries, 
+          automated scheduling, and smart task prioritization.
+        </p>
+        
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="bg-indigo-50 rounded-xl p-4">
+            <div class="text-xl font-bold text-indigo-600">23</div>
+            <div class="text-sm text-gray-600">Unread</div>
+          </div>
+          <div class="bg-indigo-50 rounded-xl p-4">
+            <div class="text-xl font-bold text-indigo-600">5</div>
+            <div class="text-sm text-gray-600">Meetings</div>
+          </div>
+          <div class="bg-indigo-50 rounded-xl p-4">
+            <div class="text-xl font-bold text-indigo-600">12</div>
+            <div class="text-sm text-gray-600">Tasks</div>
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Email</span>
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Calendar</span>
+            <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Tasks</span>
+          </div>
+          <i class="fas fa-arrow-right text-indigo-600 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"></i>
+        </div>
+      </div>
+
+      <!-- Individual Agent Cards Row -->
+      <div class="col-span-full">
+        <h2 class="text-2xl font-bold text-white text-center mb-8">Individual AI Agents</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Email Agent -->
+          <div class="service-card rounded-2xl p-6 group cursor-pointer shadow-lg" onclick="navigateToService('email-agent')">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <i class="fas fa-envelope text-white text-xl"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Email Agent</h3>
+              <p class="text-gray-600 text-sm mb-4">Smart email management and summarization</p>
+              <div class="bg-blue-50 rounded-lg p-3 mb-4">
+                <div class="text-lg font-bold text-blue-600">5</div>
+                <div class="text-xs text-gray-600">Priority Emails</div>
+              </div>
+              <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                Open Email Agent
+              </button>
+            </div>
+          </div>
+
+          <!-- Calendar Agent -->
+          <div class="service-card rounded-2xl p-6 group cursor-pointer shadow-lg" onclick="navigateToService('calendar-agent')">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <i class="fas fa-calendar text-white text-xl"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Calendar Agent</h3>
+              <p class="text-gray-600 text-sm mb-4">Intelligent scheduling and meeting management</p>
+              <div class="bg-green-50 rounded-lg p-3 mb-4">
+                <div class="text-lg font-bold text-green-600">2:30 PM</div>
+                <div class="text-xs text-gray-600">Next Meeting</div>
+              </div>
+              <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                Open Calendar
+              </button>
+            </div>
+          </div>
+
+          <!-- Task Agent -->
+          <div class="service-card rounded-2xl p-6 group cursor-pointer shadow-lg" onclick="navigateToService('task-agent')">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                <i class="fas fa-tasks text-white text-xl"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2">Task Agent</h3>
+              <p class="text-gray-600 text-sm mb-4">Smart task management and prioritization</p>
+              <div class="bg-orange-50 rounded-lg p-3 mb-4">
+                <div class="text-lg font-bold text-orange-600">4</div>
+                <div class="text-xs text-gray-600">Due Today</div>
+              </div>
+              <button class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                Open Tasks
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA Section -->
+    <div class="text-center mt-16">
+      <div class="bg-white rounded-3xl p-8 shadow-2xl">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Need Help Getting Started?</h2>
+        <p class="text-gray-600 mb-6">Our AI agents are here to help you streamline your workflow and boost productivity.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-lg">
+            <i class="fas fa-play mr-2"></i>
+            Watch Demo
+          </button>
+          <button class="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-indigo-50 transition-colors">
+            <i class="fas fa-book mr-2"></i>
+            Documentation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function navigateToService(service) {
+      // For now, we'll use alerts to show navigation
+      // In production, these would navigate to actual pages
+      
+      const services = {
+        'trade': {
+          name: 'Trade Intelligence (Victor AI)',
+          url: 'trade-intelligence.html',
+          description: 'Navigate to comprehensive trade data search and management'
+        },
+        'email': {
+          name: 'Email & Task Management Dashboard',
+          url: 'email-task-dashboard.html',
+          description: 'Navigate to unified email and task management interface'
+        },
+        'email-agent': {
+          name: 'Dedicated Email Agent',
+          url: 'email-agent.html',
+          description: 'Navigate to specialized email management interface'
+        },
+        'calendar-agent': {
+          name: 'Dedicated Calendar Agent',
+          url: 'calendar-agent.html',
+          description: 'Navigate to specialized calendar management interface'
+        },
+        'task-agent': {
+          name: 'Dedicated Task Agent',
+          url: 'task-agent.html',
+          description: 'Navigate to specialized task management interface'
+        }
+      };
+
+      const selectedService = services[service];
+      
+      if (selectedService) {
+        // Show navigation intent (replace with actual navigation in production)
+        const confirmation = confirm(`Navigate to ${selectedService.name}?\n\n${selectedService.description}\n\nURL: ${selectedService.url}`);
+        
+        if (confirmation) {
+          // In production, use: window.location.href = selectedService.url;
+          alert(`Navigating to ${selectedService.name}...\n\nIn production, this would load: ${selectedService.url}`);
+        }
+      }
+    }
+
+    // Add some interactive animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add staggered animation to service cards
+      const cards = document.querySelectorAll('.service-card');
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('opacity-0');
+        setTimeout(() => {
+          card.style.animation = 'fadeInUp 0.6s ease-out forwards';
+          card.classList.remove('opacity-0');
+        }, index * 100);
+      });
+    });
+
+    // Add CSS for fade in animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
